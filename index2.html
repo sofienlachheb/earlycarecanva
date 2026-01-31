@@ -1,0 +1,1563 @@
+<!doctype html>
+<html lang="ar" dir="rtl" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>صحتك الذكية</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+      font-family: 'Tajawal', sans-serif;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .glow-teal {
+      box-shadow: 0 0 40px rgba(20, 184, 166, 0.15);
+    }
+    
+    .risk-gradient-low {
+      background: linear-gradient(90deg, #10b981, #34d399);
+    }
+    
+    .risk-gradient-medium {
+      background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    }
+    
+    .risk-gradient-high {
+      background: linear-gradient(90deg, #ef4444, #f87171);
+    }
+    
+    .slider-thumb::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #14b8a6;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(20, 184, 166, 0.5);
+    }
+    
+    .slider-thumb::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #14b8a6;
+      cursor: pointer;
+      border: none;
+    }
+    
+    .tooltip {
+      position: relative;
+    }
+    
+    .tooltip-content {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      bottom: 100%;
+      right: 50%;
+      transform: translateX(50%);
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      width: 280px;
+      z-index: 100;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(20, 184, 166, 0.3);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .tooltip:hover .tooltip-content {
+      visibility: visible;
+      opacity: 1;
+      bottom: calc(100% + 10px);
+    }
+    
+    .tooltip-content::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      right: 50%;
+      transform: translateX(50%);
+      border: 8px solid transparent;
+      border-top-color: #1e293b;
+    }
+    
+    .nav-item {
+      transition: all 0.3s ease;
+    }
+    
+    .nav-item:hover {
+      background: rgba(20, 184, 166, 0.1);
+    }
+    
+    .nav-item.active {
+      background: rgba(20, 184, 166, 0.2);
+      border-right: 3px solid #14b8a6;
+    }
+    
+    .pulse-dot {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.1); }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .chart-bar {
+      transition: height 0.5s ease, background 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    .toggle-switch {
+      position: relative;
+      width: 52px;
+      height: 28px;
+      background: #374151;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    
+    .toggle-switch.active {
+      background: #14b8a6;
+    }
+    
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: 50%;
+      top: 3px;
+      right: 3px;
+      transition: transform 0.3s ease;
+    }
+    
+    .toggle-switch.active::after {
+      transform: translateX(-24px);
+    }
+    
+    .community-card {
+      transition: all 0.3s ease;
+    }
+    
+    .community-card:hover {
+      border-color: rgba(20, 184, 166, 0.5);
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full gradient-bg text-slate-100 overflow-auto">
+  <div id="app" class="h-full flex"><!-- القائمة الجانبية -->
+   <nav id="sidebar" class="w-64 min-h-full glass-card border-l border-slate-700/50 flex flex-col">
+    <div class="p-6 border-b border-slate-700/50">
+     <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center">
+       <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+       </svg>
+      </div>
+      <div>
+       <h1 id="app-title" class="font-bold text-lg text-white">صحتك الذكية</h1>
+       <p class="text-xs text-teal-400">الوقاية الذكية</p>
+      </div>
+     </div>
+    </div>
+    <div class="flex-1 py-4">
+     <div class="px-3 mb-2"><span class="text-xs font-medium text-slate-500 uppercase tracking-wider">التنقل</span>
+     </div><button onclick="showPage('home')" class="nav-item active w-full px-4 py-3 flex items-center gap-3 text-right" data-page="home">
+      <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      </svg><span>الرئيسية</span> </button> <button onclick="showPage('profile')" class="nav-item w-full px-4 py-3 flex items-center gap-3 text-right" data-page="profile">
+      <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg><span>ملفي الصحي</span> </button> <button onclick="showPage('prediction')" class="nav-item w-full px-4 py-3 flex items-center gap-3 text-right" data-page="prediction">
+      <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg><span>التنبؤ</span> </button> <button onclick="showPage('simulation')" class="nav-item w-full px-4 py-3 flex items-center gap-3 text-right" data-page="simulation">
+      <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+      </svg><span>المحاكاة</span> </button> <button onclick="showPage('explore')" class="nav-item w-full px-4 py-3 flex items-center gap-3 text-right" data-page="explore">
+      <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg><span>استكشاف</span> </button>
+    </div>
+    <div class="p-4 border-t border-slate-700/50">
+     <div class="glass-card rounded-xl p-4">
+      <div class="flex items-center gap-2 mb-2">
+       <div class="w-2 h-2 rounded-full bg-amber-400 pulse-dot"></div><span class="text-xs text-amber-400 font-medium">تنبيه</span>
+      </div>
+      <p class="text-xs text-slate-400">هذا التطبيق للأغراض التعليمية فقط ولا يغني عن استشارة الطبيب المختص.</p>
+     </div>
+    </div>
+   </nav><!-- المحتوى الرئيسي -->
+   <main class="flex-1 overflow-auto"><!-- الصفحة الرئيسية -->
+    <div id="page-home" class="page p-8 fade-in">
+     <div class="max-w-5xl mx-auto"><!-- قسم الترحيب -->
+      <div class="text-center mb-12">
+       <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-6">
+        <div class="w-2 h-2 rounded-full bg-teal-400 pulse-dot"></div><span class="text-sm text-teal-400">الذكاء الاصطناعي القابل للتفسير</span>
+       </div>
+       <h1 id="hero-title" class="text-5xl font-bold mb-4 bg-gradient-to-r from-white via-teal-200 to-teal-400 bg-clip-text text-transparent">افهم وتوقع مخاطرك الصحية</h1>
+       <p id="hero-tagline" class="text-xl text-slate-400 max-w-2xl mx-auto">اكتشف كيف يمكن للذكاء الاصطناعي مساعدتك في اتخاذ قرارات صحية مستنيرة بطريقة شفافة وتعليمية.</p>
+      </div><!-- بطاقات المهمة -->
+      <div class="grid md:grid-cols-2 gap-6 mb-12">
+       <div class="glass-card rounded-2xl p-6 glow-teal">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-500/20 to-emerald-500/20 flex items-center justify-center mb-4">
+         <svg class="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+         </svg>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">مهمتنا</h3>
+        <p class="text-slate-400">إتاحة الوصول إلى الوقاية الصحية من خلال الذكاء الاصطناعي القابل للتفسير، مما يجعل كل تنبؤ مفهوماً وقابلاً للتنفيذ.</p>
+       </div>
+       <div class="glass-card rounded-2xl p-6">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center mb-4">
+         <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+         </svg>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">ذكاء اصطناعي قابل للتفسير</h3>
+        <p class="text-slate-400">يتم شرح كل عامل خطر بوضوح. ستفهم لماذا وكيف يمكن أن يؤثر تغيير نمط حياتك على صحتك.</p>
+       </div>
+      </div><!-- كيف يعمل -->
+      <div class="mb-12">
+       <h2 class="text-2xl font-bold mb-6 text-center">كيف يعمل؟</h2>
+       <div class="grid md:grid-cols-4 gap-4">
+        <div class="glass-card rounded-xl p-5 text-center relative">
+         <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center font-bold text-sm">
+          1
+         </div>
+         <div class="mt-4 mb-3">
+          <svg class="w-10 h-10 mx-auto text-teal-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+         </div>
+         <h4 class="font-semibold mb-1">أنشئ ملفك</h4>
+         <p class="text-sm text-slate-400">أدخل بياناتك الصحية بسرية تامة</p>
+        </div>
+        <div class="glass-card rounded-xl p-5 text-center relative">
+         <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center font-bold text-sm">
+          2
+         </div>
+         <div class="mt-4 mb-3">
+          <svg class="w-10 h-10 mx-auto text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+         </div>
+         <h4 class="font-semibold mb-1">حلل مخاطرك</h4>
+         <p class="text-sm text-slate-400">يحسب الذكاء الاصطناعي مخاطرك لأمراض مختلفة</p>
+        </div>
+        <div class="glass-card rounded-xl p-5 text-center relative">
+         <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center font-bold text-sm">
+          3
+         </div>
+         <div class="mt-4 mb-3">
+          <svg class="w-10 h-10 mx-auto text-amber-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+         </div>
+         <h4 class="font-semibold mb-1">افهم العوامل</h4>
+         <p class="text-sm text-slate-400">يتم شرح كل عامل بطريقة ��عليمية</p>
+        </div>
+        <div class="glass-card rounded-xl p-5 text-center relative">
+         <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center font-bold text-sm">
+          4
+         </div>
+         <div class="mt-4 mb-3">
+          <svg class="w-10 h-10 mx-auto text-purple-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+          </svg>
+         </div>
+         <h4 class="font-semibold mb-1">حاكِ التغييرات</h4>
+         <p class="text-sm text-slate-400">شاهد تأثير خياراتك على صحتك</p>
+        </div>
+       </div>
+      </div><!-- زر البدء -->
+      <div class="text-center"><button onclick="showPage('profile')" class="px-8 py-4 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-teal-500/25 transition-all duration-300 transform hover:-translate-y-1"> ابدأ تقييمي </button>
+       <p class="mt-4 text-sm text-slate-500">مجاني • سري • تعليمي</p>
+      </div>
+     </div>
+    </div><!-- صفحة الملف الشخصي -->
+    <div id="page-profile" class="page hidden p-8 fade-in">
+     <div class="max-w-4xl mx-auto">
+      <div class="flex items-center justify-between mb-8">
+       <div>
+        <h2 class="text-3xl font-bold">ملفي الصحي</h2>
+        <p class="text-slate-400">أدخل معلوماتك للحصول على تحليل شخصي</p>
+       </div>
+       <div id="profile-status" class="px-4 py-2 rounded-full glass-card text-sm"><span class="text-slate-400">غير محفوظ</span>
+       </div>
+      </div>
+      <form id="profile-form" class="space-y-8"><!-- المعلومات الشخصية -->
+       <div class="glass-card rounded-2xl p-6">
+        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+         <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+         </svg> المعلومات الشخصية</h3>
+        <div class="grid md:grid-cols-2 gap-6">
+         <div><label for="name" class="block text-sm text-slate-400 mb-2">الاسم / اللقب</label> <input type="text" id="name" class="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700 focus:border-teal-500 focus:outline-none transition" placeholder="اسمك">
+         </div>
+         <div><label for="age" class="block text-sm text-slate-400 mb-2">العمر</label> <input type="number" id="age" min="18" max="120" class="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700 focus:border-teal-500 focus:outline-none transition" placeholder="35">
+         </div>
+         <div><label for="gender" class="block text-sm text-slate-400 mb-2">الجنس</label> <select id="gender" class="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700 focus:border-teal-500 focus:outline-none transition"> <option value="">اختر</option> <option value="male">ذكر</option> <option value="female">أنثى</option> <option value="other">آخر</option> </select>
+         </div>
+         <div class="grid grid-cols-2 gap-4">
+          <div><label for="weight" class="block text-sm text-slate-400 mb-2">الوزن (كجم)</label> <input type="number" id="weight" min="30" max="300" class="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700 focus:border-teal-500 focus:outline-none transition" placeholder="70">
+          </div>
+          <div><label for="height" class="block text-sm text-slate-400 mb-2">الطول (سم)</label> <input type="number" id="height" min="100" max="250" class="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700 focus:border-teal-500 focus:outline-none transition" placeholder="175">
+          </div>
+         </div>
+        </div>
+       </div><!-- نمط الحياة -->
+       <div class="glass-card rounded-2xl p-6">
+        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+         <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+         </svg> نمط الحياة</h3>
+        <div class="space-y-6">
+         <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3"><span class="tooltip"> <span class="text-slate-300">مدخن</span>
+            <div class="tooltip-content"><strong class="text-teal-400">تأثير التدخين</strong><br>
+              يضاعف التدخين خطر أمراض القلب 2-4 مرات ويزيد خطر سرطان ال��ئة 25 ضعفاً.
+            </div></span>
+           <svg class="w-4 h-4 text-slate-500 cursor-help" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+           </svg>
+          </div>
+          <div id="toggle-smoking" class="toggle-switch" onclick="toggleSwitch(this, 'smoking')"></div>
+         </div>
+         <div>
+          <div class="flex items-center justify-between mb-2">
+           <div class="flex items-center gap-3"><span class="tooltip"> <span class="text-slate-300">استهلاك الكحول</span>
+             <div class="tooltip-content"><strong class="text-teal-400">تأثير الكحول</strong><br>
+               الاستهلاك المفرط يزيد مخاطر أمراض الكبد والسرطان واضطرابات القلب.
+             </div></span>
+            <svg class="w-4 h-4 text-slate-500 cursor-help" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+           </div>
+          </div><select id="alcohol" class="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700 focus:border-teal-500 focus:outline-none transition"> <option value="none">أبداً</option> <option value="occasional">أحياناً (1-2/أسبوع)</option> <option value="regular">منتظم (3-5/أسبوع)</option> <option value="heavy">يومياً</option> </select>
+         </div>
+         <div>
+          <div class="flex items-center justify-between mb-2">
+           <div class="flex items-center gap-3"><span class="tooltip"> <span class="text-slate-300">النشاط البدني (ساعات/أسبوع)</span>
+             <div class="tooltip-content"><strong class="text-teal-400">فوائد الرياضة</strong><br>
+               ت����ي منظمة الصحة العالمية بـ150 دقيقة من النشاط المعتدل أسبوعياً. الرياضة تقلل مخاطر القلب بنسبة 30-50%.
+             </div></span>
+            <svg class="w-4 h-4 text-slate-500 cursor-help" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+           </div><span id="exercise-value" class="text-teal-400 font-semibold">3 س</span>
+          </div><input type="range" id="exercise" min="0" max="20" value="3" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer slider-thumb" oninput="updateSliderValue('exercise', ' س')">
+         </div>
+         <div>
+          <div class="flex items-center justify-between mb-2">
+           <div class="flex items-center gap-3"><span class="tooltip"> <span class="text-slate-300">جودة التغذية</span>
+             <div class="tooltip-content"><strong class="text-teal-400">تأثير التغذية</strong><br>
+               الت��ذية المتوازنة الغنية بالفواكه والخضروات والألياف تقلل مخاطر السكري وأمراض القلب وبعض السرطانات.
+             </div></span>
+            <svg class="w-4 h-4 text-slate-500 cursor-help" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+           </div><span id="diet_quality-value" class="text-teal-400 font-semibold">5/10</span>
+          </div><input type="range" id="diet_quality" min="1" max="10" value="5" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer slider-thumb" oninput="updateSliderValue('diet_quality', '/10')">
+         </div>
+         <div>
+          <div class="flex items-center justify-between mb-2">
+           <div class="flex items-center gap-3"><span class="tooltip"> <span class="text-slate-300">ساعات النوم</span>
+             <div class="tooltip-content"><strong class="text-teal-400">أهمية النوم</strong><br>
+               يُوصى بـ7-9 ساعات نوم. قلة النوم تزيد مخاطر السمنة والسكري واضطرابات القلب.
+             </div></span>
+            <svg class="w-4 h-4 text-slate-500 cursor-help" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+           </div><span id="sleep_hours-value" class="text-teal-400 font-semibold">7 س</span>
+          </div><input type="range" id="sleep_hours" min="4" max="12" value="7" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer slider-thumb" oninput="updateSliderValue('sleep_hours', ' س')">
+         </div>
+         <div>
+          <div class="flex items-center justify-between mb-2">
+           <div class="flex items-center gap-3"><span class="tooltip"> <span class="text-slate-300">مستوى التوتر</span>
+             <div class="tooltip-content"><strong class="text-teal-400">تأثير التوتر</strong><br>
+               التوتر المزمن يرفع ضغط الدم ويضعف جهاز المناعة ويشجع على سلوكيات خطرة.
+             </div></span>
+            <svg class="w-4 h-4 text-slate-500 cursor-help" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+           </div><span id="stress_level-value" class="text-teal-400 font-semibold">5/10</span>
+          </div><input type="range" id="stress_level" min="1" max="10" value="5" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer slider-thumb" oninput="updateSliderValue('stress_level', '/10')">
+         </div>
+        </div>
+       </div><!-- التاريخ الطبي -->
+       <div class="glass-card rounded-2xl p-6">
+        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+         <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+         </svg> التاريخ الطبي</h3>
+        <div class="space-y-4">
+         <p class="text-sm text-slate-400 mb-4">التاريخ العائلي (الوالدين، الأجداد، الإخوة)</p>
+         <div class="flex items-center justify-between py-2">
+          <div class="flex items-center gap-3"><span class="tooltip"> <span class="text-slate-300">السكري في العائلة</span>
+            <div class="tooltip-content"><strong class="text-teal-400">الخطر الوراثي</strong><br>
+              وجود أحد الوالدين مصاب بالسكري يضاعف خطر الإصابة بالسكري من النوع 2.
+            </div></span>
+           <svg class="w-4 h-4 text-slate-500 cursor-help" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+           </svg>
+          </div>
+          <div id="toggle-family_diabetes" class="toggle-switch" onclick="toggleSwitch(this, 'family_diabetes')"></div>
+         </div>
+         <div class="flex items-center justify-between py-2">
+          <div class="flex items-center gap-3"><span class="tooltip"> <span class="text-slate-300">أمراض القلب والأوعية الدموية</span>
+            <div class="tooltip-content"><strong class="text-teal-400">الخطر الوراثي</strong><br>
+              التاريخ العائلي لأمراض القلب يزيد الخطر بنس��ة 40-60%.
+            </div></span>
+           <svg class="w-4 h-4 text-slate-500 cursor-help" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+           </svg>
+          </div>
+          <div id="toggle-family_heart" class="toggle-switch" onclick="toggleSwitch(this, 'family_heart')"></div>
+         </div>
+         <div class="flex items-center justify-between py-2">
+          <div class="flex items-center gap-3"><span class="tooltip"> <span class="text-slate-300">السرطان</span>
+            <div class="tooltip-content"><strong class="text-teal-400">الخطر الوراثي</strong><br>
+              5-10% ��ن السرطانات لها مكون وراثي. بعض الطفرات الجينية تزيد المخاطر بشكل كبير.
+            </div></span>
+           <svg class="w-4 h-4 text-slate-500 cursor-help" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+           </svg>
+          </div>
+          <div id="toggle-family_cancer" class="toggle-switch" onclick="toggleSwitch(this, 'family_cancer')"></div>
+         </div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-slate-700">
+         <div><label for="blood_pressure" class="block text-sm text-slate-400 mb-2">ضغط الدم</label> <select id="blood_pressure" class="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700 focus:border-teal-500 focus:outline-none transition"> <option value="normal">طبيعي (&lt;120/80)</option> <option value="elevated">مرتفع (120-129/&lt;80)</option> <option value="high_1">ارتفاع المرحلة 1 (130-139/80-89)</option> <option value="high_2">ارتفاع المرحلة 2 (≥140/≥90)</option> <option value="unknown">لا أعرف</option> </select>
+         </div>
+         <div><label for="cholesterol" class="block text-sm text-slate-400 mb-2">الكوليسترول</label> <select id="cholesterol" class="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700 focus:border-teal-500 focus:outline-none transition"> <option value="normal">طبيعي (&lt;200 مجم/دل)</option> <option value="borderline">حد الارتفاع (200-239 مجم/دل)</option> <option value="high">مرتفع (≥240 مجم/دل)</option> <option value="unknown">لا أعرف</option> </select>
+         </div>
+        </div>
+       </div>
+       <div class="flex gap-4"><button type="submit" id="save-profile-btn" class="flex-1 py-4 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-xl font-semibold hover:shadow-lg hover:shadow-teal-500/25 transition-all duration-300"> حفظ ملفي </button> <button type="button" onclick="showPage('prediction')" class="px-8 py-4 glass-card rounded-xl font-semibold hover:bg-slate-700/50 transition-all duration-300"> ← عرض مخاطري </button>
+       </div>
+      </form>
+     </div>
+    </div><!-- ��فحة التنبؤ -->
+    <div id="page-prediction" class="page hidden p-8 fade-in">
+     <div class="max-w-5xl mx-auto">
+      <div class="mb-8">
+       <h2 class="text-3xl font-bold">تحليل مخاطرك</h2>
+       <p class="text-slate-400">بناء�� على بياناتك الشخصية ونموذج الذكاء الاصطناعي القابل للتفسير</p>
+      </div>
+      <div id="no-profile-warning" class="glass-card rounded-2xl p-8 text-center mb-8">
+       <svg class="w-16 h-16 mx-auto text-amber-400 mb-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+       </svg>
+       <h3 class="text-xl font-semibold mb-2">الملف غير مكتمل</h3>
+       <p class="text-slate-400 mb-4">للحصول على تحليل شخصي، يرجى إكمال ملفك الصحي أولاً.</p><button onclick="showPage('profile')" class="px-6 py-3 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-xl font-semibold hover:shadow-lg transition-all"> إكمال ملفي </button>
+      </div>
+      <div id="prediction-results" class="hidden"><!-- نظرة عامة على الصحة -->
+       <div class="grid md:grid-cols-3 gap-6 mb-8">
+        <div class="glass-card rounded-2xl p-6 text-center glow-teal">
+         <div class="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+         </div>
+         <p class="text-sm text-slate-400 mb-1">درجة الصحة العامة</p>
+         <p id="health-score" class="text-4xl font-bold text-teal-400 mb-2">--</p>
+         <p id="health-score-label" class="text-sm text-slate-500">من 100</p>
+        </div>
+        <div class="glass-card rounded-2xl p-6 text-center">
+         <div class="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+         </div>
+         <p class="text-sm text-slate-400 mb-1">إمكانية التحسين</p>
+         <p id="improvement-potential" class="text-4xl font-bold text-purple-400 mb-2">--</p>
+         <p class="text-sm text-slate-500">نقاط قابلة للكسب</p>
+        </div>
+        <div class="glass-card rounded-2xl p-6 text-center">
+         <div class="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+         </div>
+         <p class="text-sm text-slate-400 mb-1">العمر الصحي التقديري</p>
+         <p id="health-age" class="text-4xl font-bold text-amber-400 mb-2">--</p>
+         <p class="text-sm text-slate-500">سنة</p>
+        </div>
+       </div><!-- بطاقة مؤشر كتلة الجسم المحسّنة -->
+       <div class="glass-card rounded-2xl p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+         <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-teal-500/20 flex items-center justify-center">
+           <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+           </svg>
+          </div>
+          <div>
+           <h3 class="text-lg font-semibold">مؤشر كتلة الجسم (BMI)</h3>
+           <p class="text-xs text-slate-500">مؤشر الوزن ��قابل الطول</p>
+          </div>
+         </div>
+         <div class="text-left"><span id="imc-value" class="text-3xl font-bold text-teal-400">--</span>
+          <p id="imc-category" class="text-xs text-slate-400">--</p>
+         </div>
+        </div>
+        <div class="relative h-4 bg-slate-700 rounded-full overflow-hidden mb-3">
+         <div class="absolute inset-0 flex">
+          <div class="w-1/4 bg-blue-500/30"></div>
+          <div class="w-1/4 bg-emerald-500/30"></div>
+          <div class="w-1/4 bg-amber-500/30"></div>
+          <div class="w-1/4 bg-red-500/30"></div>
+         </div>
+         <div id="imc-marker" class="absolute top-0 h-full w-1 bg-white shadow-lg transition-all duration-500" style="left: 50%"></div>
+        </div>
+        <div class="flex justify-between text-xs text-slate-500 mb-4"><span>نحافة<br>
+          &lt;18.5</span> <span>طبيعي<br>
+          18.5-24.9</span> <span>زيادة<br>
+          25-29.9</span> <span>سمنة<br>
+          ≥30</span>
+        </div>
+        <div id="imc-details" class="p-4 rounded-xl bg-slate-800/30 border border-slate-700/50">
+         <p id="imc-interpretation" class="text-sm text-slate-300"></p>
+        </div>
+       </div><!-- بطاقات المخاطر التفصيلية -->
+       <div class="mb-8">
+        <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+         <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+         </svg> تقييم المخاطر المفصّل</h3>
+        <div class="grid md:grid-cols-3 gap-6"><!-- خطر القلب والأوعية -->
+         <div class="glass-card rounded-2xl p-6 stat-card transition-all duration-300">
+          <div class="flex items-center gap-3 mb-4">
+           <div class="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center">
+            <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+           </div>
+           <div class="flex-1">
+            <p class="text-sm text-slate-400">أمراض القلب والأوعية</p>
+            <p id="risk-cardio" class="text-3xl font-bold">--%</p>
+           </div>
+          </div>
+          <div class="h-3 bg-slate-700 rounded-full overflow-hidden mb-2">
+           <div id="risk-cardio-bar" class="h-full risk-gradient-low transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <p id="risk-cardio-label" class="text-xs text-slate-500 text-center">مستوى الخطر</p>
+         </div><!-- خطر السكري -->
+         <div class="glass-card rounded-2xl p-6 stat-card transition-all duration-300">
+          <div class="flex items-center gap-3 mb-4">
+           <div class="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center">
+            <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+            </svg>
+           </div>
+           <div class="flex-1">
+            <p class="text-sm text-slate-400">السكري النوع 2</p>
+            <p id="risk-diabetes" class="text-3xl font-bold">--%</p>
+           </div>
+          </div>
+          <div class="h-3 bg-slate-700 rounded-full overflow-hidden mb-2">
+           <div id="risk-diabetes-bar" class="h-full risk-gradient-low transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <p id="risk-diabetes-label" class="text-xs text-slate-500 text-center">مستوى الخطر</p>
+         </div><!-- الإجهاد التأكسدي -->
+         <div class="glass-card rounded-2xl p-6 stat-card transition-all duration-300">
+          <div class="flex items-center gap-3 mb-4">
+           <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+            <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+           </div>
+           <div class="flex-1">
+            <p class="text-sm text-slate-400">الإجهاد التأكسدي</p>
+            <p id="risk-oxidative" class="text-3xl font-bold">--%</p>
+           </div>
+          </div>
+          <div class="h-3 bg-slate-700 rounded-full overflow-hidden mb-2">
+           <div id="risk-oxidative-bar" class="h-full risk-gradient-low transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <p id="risk-oxidative-label" class="text-xs text-slate-500 text-center">مستوى الخطر</p>
+         </div>
+        </div>
+       </div><!-- رسم بياني مقارن -->
+       <div class="glass-card rounded-2xl p-6 mb-8">
+        <h3 class="text-lg font-semibold mb-6 flex items-center gap-2">
+         <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+         </svg> مقارنة مخاطرك مع المتوسط</h3>
+        <div class="space-y-6">
+         <div>
+          <div class="flex justify-between mb-2"><span class="text-sm text-slate-400">أمراض القلب والأوعية</span> <span class="text-sm"> <span id="compare-cardio-you" class="text-red-400 font-semibold">--%</span> <span class="text-slate-600 mx-2">مقابل</span> <span class="text-slate-500">35%</span> </span>
+          </div>
+          <div class="relative h-8 bg-slate-700/30 rounded-lg overflow-hidden">
+           <div class="absolute right-0 h-full bg-slate-600/50 rounded-lg" style="width: 35%"></div>
+           <div id="compare-cardio-bar" class="absolute right-0 h-full bg-gradient-to-l from-red-500 to-red-600 rounded-lg transition-all duration-700" style="width: 0%"></div>
+           <div class="absolute inset-0 flex items-center justify-center"><span id="compare-cardio-diff" class="text-xs font-semibold text-white drop-shadow-lg">--</span>
+           </div>
+          </div>
+         </div>
+         <div>
+          <div class="flex justify-between mb-2"><span class="text-sm text-slate-400">السكري النوع 2</span> <span class="text-sm"> <span id="compare-diabetes-you" class="text-amber-400 font-semibold">--%</span> <span class="text-slate-600 mx-2">مقابل</span> <span class="text-slate-500">28%</span> </span>
+          </div>
+          <div class="relative h-8 bg-slate-700/30 rounded-lg overflow-hidden">
+           <div class="absolute right-0 h-full bg-slate-600/50 rounded-lg" style="width: 28%"></div>
+           <div id="compare-diabetes-bar" class="absolute right-0 h-full bg-gradient-to-l from-amber-500 to-amber-600 rounded-lg transition-all duration-700" style="width: 0%"></div>
+           <div class="absolute inset-0 flex items-center justify-center"><span id="compare-diabetes-diff" class="text-xs font-semibold text-white drop-shadow-lg">--</span>
+           </div>
+          </div>
+         </div>
+         <div>
+          <div class="flex justify-between mb-2"><span class="text-sm text-slate-400">الإجهاد التأكسدي</span> <span class="text-sm"> <span id="compare-oxidative-you" class="text-purple-400 font-semibold">--%</span> <span class="text-slate-600 mx-2">مقابل</span> <span class="text-slate-500">42%</span> </span>
+          </div>
+          <div class="relative h-8 bg-slate-700/30 rounded-lg overflow-hidden">
+           <div class="absolute right-0 h-full bg-slate-600/50 rounded-lg" style="width: 42%"></div>
+           <div id="compare-oxidative-bar" class="absolute right-0 h-full bg-gradient-to-l from-purple-500 to-purple-600 rounded-lg transition-all duration-700" style="width: 0%"></div>
+           <div class="absolute inset-0 flex items-center justify-center"><span id="compare-oxidative-diff" class="text-xs font-semibold text-white drop-shadow-lg">--</span>
+           </div>
+          </div>
+         </div>
+        </div>
+        <p class="mt-4 text-xs text-slate-500 text-center">* المتوسطات مبنية على بيانات المجتمع العام</p>
+       </div><!-- قسم التفسير -->
+       <div class="glass-card rounded-2xl p-6 mb-6">
+        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+         <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+         </svg> العوامل المساهمة في مخاطرك</h3>
+        <div id="factors-list" class="space-y-4"><!-- سيتم إضافة العوامل ديناميكياً -->
+        </div>
+       </div><!-- زر الإجراء -->
+       <div class="text-center"><button onclick="showPage('simulation')" class="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 transform hover:-translate-y-1"> 🔮 محاكاة التغييرات </button>
+        <p class="mt-3 text-sm text-slate-500">اكتشف كيف يمكن لتغيير عاداتك أن يقلل مخاطرك</p>
+       </div>
+      </div>
+     </div>
+    </div>
+    <!-- صفحة المحاكاة -->
+    <div id="page-simulation" class="page hidden p-8 fade-in">
+     <div class="max-w-5xl mx-auto">
+      <div class="mb-8">
+       <h2 class="text-3xl font-bold">محاكاة الوقاية</h2>
+       <p class="text-slate-400">��دّل المعايير وشاهد التأثير على مخاطرك في الوقت الفعلي</p>
+      </div>
+      <div id="no-profile-simulation" class="glass-card rounded-2xl p-8 text-center">
+       <svg class="w-16 h-16 mx-auto text-amber-400 mb-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+       </svg>
+       <h3 class="text-xl font-semibold mb-2">الملف مطلوب</h3>
+       <p class="text-slate-400 mb-4">أكمل ملفك أولاً للوصول إلى المحاكاة.</p><button onclick="showPage('profile')" class="px-6 py-3 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-xl font-semibold hover:shadow-lg transition-all"> إنشاء ملفي </button>
+      </div>
+      <div id="simulation-content" class="hidden">
+       <div class="grid lg:grid-cols-2 gap-8"><!-- عناصر التحكم في المحاكاة -->
+        <div class="glass-card rounded-2xl p-6">
+         <h3 class="text-lg font-semibold mb-6 flex items-center gap-2">
+          <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+          </svg> معايير المحاكاة</h3>
+         <div class="space-y-6">
+          <div class="p-4 rounded-xl bg-slate-800/30 border border-slate-700/50">
+           <div class="flex items-center justify-between mb-3"><span class="font-medium">الإقلاع عن التدخين</span>
+            <div id="sim-toggle-smoking" class="toggle-switch" onclick="toggleSimSwitch(this, 'smoking')"></div>
+           </div>
+           <p class="text-sm text-slate-400">التأثير المحتمل: -15% خطر القلب</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-800/30 border border-slate-700/50">
+           <div class="flex items-center justify-between mb-3"><span class="font-medium">النشاط البدني</span> <span id="sim-exercise-value" class="text-teal-400 font-semibold">3 س/أسبوع</span>
+           </div><input type="range" id="sim-exercise" min="0" max="10" value="3" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer slider-thumb" oninput="updateSimulation()">
+           <p class="text-sm text-slate-400 mt-2">+1 ساعة = -5% خطر عام تقديري</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-800/30 border border-slate-700/50">
+           <div class="flex items-center justify-between mb-3"><span class="font-medium">جودة التغذية</span> <span id="sim-diet-value" class="text-teal-400 font-semibold">5/10</span>
+           </div><input type="range" id="sim-diet" min="1" max="10" value="5" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer slider-thumb" oninput="updateSimulation()">
+           <p class="text-sm text-slate-400 mt-2">التحسن إلى 8+: -20% خطر السكري</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-800/30 border border-slate-700/50">
+           <div class="flex items-center justify-between mb-3"><span class="font-medium">ت����يل التوتر</span> <span id="sim-stress-value" class="text-teal-400 font-semibold">5/10</span>
+           </div><input type="range" id="sim-stress" min="1" max="10" value="5" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer slider-thumb" oninput="updateSimulation()">
+           <p class="text-sm text-slate-400 mt-2">توتر أقل = صحة عامة أفضل</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-800/30 border border-slate-700/50">
+           <div class="flex items-center justify-between mb-3"><span class="font-medium">ساعات النوم</span> <span id="sim-sleep-value" class="text-teal-400 font-semibold">7 س</span>
+           </div><input type="range" id="sim-sleep" min="4" max="10" value="7" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer slider-thumb" oninput="updateSimulation()">
+           <p class="text-sm text-slate-400 mt-2">7-9 ساعات مثالية للتعافي</p>
+          </div>
+         </div><button onclick="resetSimulation()" class="w-full mt-6 py-3 glass-card rounded-xl font-semibold hover:bg-slate-700/50 transition-all"> 🔄 إعادة تعيين للقيم الحالية </button>
+        </div><!-- نتائج المحاكاة -->
+        <div>
+         <div class="glass-card rounded-2xl p-6 mb-6 glow-teal">
+          <h3 class="text-lg font-semibold mb-4">مقارنة المخاطر</h3>
+          <div class="space-y-6">
+           <div>
+            <div class="flex justify-between mb-2"><span class="text-slate-400">القلب والأوعية</span>
+             <div class="flex items-center gap-2"><span id="sim-cardio-before" class="text-slate-500">--% ←</span> <span id="sim-cardio-after" class="text-teal-400 font-bold">--%</span>
+             </div>
+            </div>
+            <div class="relative h-4 bg-slate-700 rounded-full overflow-hidden">
+             <div id="sim-cardio-bar-before" class="absolute h-full bg-slate-500/50 transition-all duration-500" style="width: 0%"></div>
+             <div id="sim-cardio-bar-after" class="absolute h-full bg-teal-500 transition-all duration-500" style="width: 0%"></div>
+            </div>
+           </div>
+           <div>
+            <div class="flex justify-between mb-2"><span class="text-slate-400">السكري النوع 2</span>
+             <div class="flex items-center gap-2"><span id="sim-diabetes-before" class="text-slate-500">--% ←</span> <span id="sim-diabetes-after" class="text-teal-400 font-bold">--%</span>
+             </div>
+            </div>
+            <div class="relative h-4 bg-slate-700 rounded-full overflow-hidden">
+             <div id="sim-diabetes-bar-before" class="absolute h-full bg-slate-500/50 transition-all duration-500" style="width: 0%"></div>
+             <div id="sim-diabetes-bar-after" class="absolute h-full bg-amber-500 transition-all duration-500" style="width: 0%"></div>
+            </div>
+           </div>
+           <div>
+            <div class="flex justify-between mb-2"><span class="text-slate-400">الإجهاد التأكسدي</span>
+             <div class="flex items-center gap-2"><span id="sim-oxidative-before" class="text-slate-500">--% ←</span> <span id="sim-oxidative-after" class="text-teal-400 font-bold">--%</span>
+             </div>
+            </div>
+            <div class="relative h-4 bg-slate-700 rounded-full overflow-hidden">
+             <div id="sim-oxidative-bar-before" class="absolute h-full bg-slate-500/50 transition-all duration-500" style="width: 0%"></div>
+             <div id="sim-oxidative-bar-after" class="absolute h-full bg-purple-500 transition-all duration-500" style="width: 0%"></div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="glass-card rounded-2xl p-6">
+          <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+           <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+           </svg> المكسب المحتمل</h3>
+          <div id="simulation-gain" class="text-center py-6">
+           <p class="text-5xl font-bold text-emerald-400 mb-2" id="total-gain">0%</p>
+           <p class="text-slate-400">متوسط انخفاض المخاطر</p>
+          </div>
+          <div id="simulation-tips" class="mt-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+           <p class="text-sm text-emerald-300">💡 ن��يحة: ابدأ بالتغييرات الأكثر تأثيراً بأقل جهد.</p>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+    <!-- صفحة الاستكشاف -->
+    <div id="page-explore" class="page hidden p-8 fade-in">
+     <div class="max-w-5xl mx-auto">
+      <div class="mb-8">
+       <h2 class="text-3xl font-bold">استكشاف الاتجاهات</h2>
+       <p class="text-slate-400">تحليل م��هول لبيانات المجتمع للتوعية بالوقاية</p>
+      </div><!-- نظرة عامة على الإحصاءات -->
+      <div class="grid md:grid-cols-4 gap-4 mb-8">
+       <div class="glass-card rounded-xl p-4 text-center">
+        <p class="text-3xl font-bold text-teal-400" id="stat-users">0</p>
+        <p class="text-sm text-slate-400">ملفات منشأة</p>
+       </div>
+       <div class="glass-card rounded-xl p-4 text-center">
+        <p class="text-3xl font-bold text-emerald-400" id="stat-avg-age">--</p>
+        <p class="text-sm text-slate-400">متوسط العمر</p>
+       </div>
+       <div class="glass-card rounded-xl p-4 text-center">
+        <p class="text-3xl font-bold text-amber-400" id="stat-smokers">--%</p>
+        <p class="text-sm text-slate-400">مدخنون</p>
+       </div>
+       <div class="glass-card rounded-xl p-4 text-center">
+        <p class="text-3xl font-bold text-purple-400" id="stat-avg-exercise">-- س</p>
+        <p class="text-sm text-slate-400">رياضة/أسبوع</p>
+       </div>
+      </div><!-- رؤى المجتمع -->
+      <div class="grid md:grid-cols-2 gap-6 mb-8">
+       <div class="glass-card rounded-2xl p-6 community-card">
+        <h3 class="text-lg font-semibold mb-4">توزيع مخاطر القلب والأوعية</h3>
+        <div class="flex items-end justify-between h-40 gap-2">
+         <div class="flex-1 flex flex-col items-center">
+          <div id="bar-cardio-low" class="w-full bg-emerald-500 rounded-t chart-bar" style="height: 60%"></div><span class="text-xs text-slate-400 mt-2">منخفض</span>
+         </div>
+         <div class="flex-1 flex flex-col items-center">
+          <div id="bar-cardio-medium" class="w-full bg-amber-500 rounded-t chart-bar" style="height: 30%"></div><span class="text-xs text-slate-400 mt-2">متوسط</span>
+         </div>
+         <div class="flex-1 flex flex-col items-center">
+          <div id="bar-cardio-high" class="w-full bg-red-500 rounded-t chart-bar" style="height: 10%"></div><span class="text-xs text-slate-400 mt-2">مرتفع</span>
+         </div>
+        </div>
+       </div>
+       <div class="glass-card rounded-2xl p-6 community-card">
+        <h3 class="text-lg font-semibold mb-4">عوامل الخطر الأكثر شيوعاً</h3>
+        <div class="space-y-3">
+         <div class="flex items-center justify-between"><span class="text-slate-300">قلة الحركة</span>
+          <div class="flex items-center gap-2">
+           <div class="w-32 h-2 bg-slate-700 rounded-full overflow-hidden">
+            <div id="factor-sedentary" class="h-full bg-red-400" style="width: 65%"></div>
+           </div><span class="text-sm text-slate-400">65%</span>
+          </div>
+         </div>
+         <div class="flex items-center justify-between"><span class="text-slate-300">توتر مرتفع</span>
+          <div class="flex items-center gap-2">
+           <div class="w-32 h-2 bg-slate-700 rounded-full overflow-hidden">
+            <div id="factor-stress" class="h-full bg-amber-400" style="width: 58%"></div>
+           </div><span class="text-sm text-slate-400">58%</span>
+          </div>
+         </div>
+         <div class="flex items-center justify-between"><span class="text-slate-300">تغذية غير متو��زنة</span>
+          <div class="flex items-center gap-2">
+           <div class="w-32 h-2 bg-slate-700 rounded-full overflow-hidden">
+            <div id="factor-diet" class="h-full bg-orange-400" style="width: 52%"></div>
+           </div><span class="text-sm text-slate-400">52%</span>
+          </div>
+         </div>
+         <div class="flex items-center justify-between"><span class="text-slate-300">قلة النوم</span>
+          <div class="flex items-center gap-2">
+           <div class="w-32 h-2 bg-slate-700 rounded-full overflow-hidden">
+            <div id="factor-sleep" class="h-full bg-purple-400" style="width: 45%"></div>
+           </div><span class="text-sm text-slate-400">45%</span>
+          </div>
+         </div>
+         <div class="flex items-center justify-between"><span class="text-slate-300">التدخين</span>
+          <div class="flex items-center gap-2">
+           <div class="w-32 h-2 bg-slate-700 rounded-full overflow-hidden">
+            <div id="factor-smoking" class="h-full bg-slate-400" style="width: 28%"></div>
+           </div><span class="text-sm text-slate-400">28%</span>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div><!-- رؤى تعليمية -->
+      <div class="glass-card rounded-2xl p-6">
+       <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg> ما تعلمنا إياه البيانات</h3>
+       <div class="grid md:grid-cols-3 gap-4">
+        <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+         <p class="text-emerald-300 font-medium mb-2">🏃 الرياضة تصنع الفارق</p>
+         <p class="text-sm text-slate-400">المستخدمون الذين يمارسون 3+ ساعات رياضة أسبوعياً لديهم مخاطر قلبية أقل بنسبة 35%.</p>
+        </div>
+        <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
+         <p class="text-amber-300 font-medium mb-2">😴 النوم مفتاح الصحة</p>
+         <p class="text-sm text-slate-400">من ينامون 7-8 ساعات ي����رون أفضل مؤشرات صحية عامة في مجتمعنا.</p>
+        </div>
+        <div class="p-4 rounded-xl bg-purple-500/10 border border-purple-500/30">
+         <p class="text-purple-300 font-medium mb-2">🥗 التغذية مهمة</p>
+         <p class="text-sm text-slate-400">درجة غ��ائية 7+/10 ترتبط بانخفاض 25% في خطر السكري.</p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </main>
+  </div><!-- إشعار Toast -->
+  <div id="toast" class="fixed bottom-4 left-4 px-6 py-3 rounded-xl glass-card border border-teal-500/30 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+   <p id="toast-message" class="text-sm"></p>
+  </div>
+  <script>
+    // التكوين الافتراضي
+    const defaultConfig = {
+      app_title: 'صحتك الذكية',
+      tagline: 'افهم وتوقع مخاطرك الصحية',
+      background_color: '#0f172a',
+      surface_color: '#1e293b',
+      text_color: '#e2e8f0',
+      primary_color: '#14b8a6',
+      accent_color: '#8b5cf6'
+    };
+
+    // حالة التطبيق
+    let currentProfile = {
+      user_id: 'demo_user',
+      name: 'مستخدم تجريبي',
+      age: 35,
+      gender: 'male',
+      weight: 80,
+      height: 175,
+      smoking: true,
+      alcohol: 'occasional',
+      exercise: 2,
+      diet_quality: 5,
+      sleep_hours: 6,
+      stress_level: 7,
+      family_diabetes: true,
+      family_heart: false,
+      family_cancer: false,
+      blood_pressure: 'elevated',
+      cholesterol: 'borderline',
+      created_at: new Date().toISOString(),
+      last_simulation: new Date().toISOString()
+    };
+    let allProfiles = [currentProfile];
+    let formState = {
+      smoking: true,
+      family_diabetes: true,
+      family_heart: false,
+      family_cancer: false
+    };
+    let simState = {
+      smoking: true
+    };
+
+    // معالج البيانات للحفظ
+    const dataHandler = {
+      onDataChanged(data) {
+        allProfiles = data;
+        if (data.length > 0) {
+          currentProfile = data[data.length - 1];
+          updateProfileStatus();
+          updatePredictionPage();
+          updateSimulationPage();
+        }
+        updateExplorePage();
+      }
+    };
+
+    // تهيئة SDKs
+    async function initApp() {
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (config) => {
+            document.getElementById('app-title').textContent = config.app_title || defaultConfig.app_title;
+            document.getElementById('hero-tagline').textContent = config.tagline || defaultConfig.tagline;
+          },
+          mapToCapabilities: (config) => ({
+            recolorables: [
+              {
+                get: () => config.primary_color || defaultConfig.primary_color,
+                set: (value) => window.elementSdk.setConfig({ primary_color: value })
+              }
+            ],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ['app_title', config.app_title || defaultConfig.app_title],
+            ['tagline', config.tagline || defaultConfig.tagline]
+          ])
+        });
+      }
+
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init(dataHandler);
+        if (!result.isOk) {
+          showToast('خطأ في الاتصال بالبيانات', 'error');
+        }
+      }
+    }
+
+    // التنقل بين الصفح��ت
+    function showPage(pageName) {
+      document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.nav-item').forEach(n => {
+        n.classList.remove('active');
+        n.querySelector('svg')?.classList.remove('text-teal-400');
+        n.querySelector('svg')?.classList.add('text-slate-400');
+      });
+      
+      const page = document.getElementById(`page-${pageName}`);
+      if (page) {
+        page.classList.remove('hidden');
+        page.classList.add('fade-in');
+      }
+      
+      const navItem = document.querySelector(`[data-page="${pageName}"]`);
+      if (navItem) {
+        navItem.classList.add('active');
+        navItem.querySelector('svg')?.classList.remove('text-slate-400');
+        navItem.querySelector('svg')?.classList.add('text-teal-400');
+      }
+
+      if (pageName === 'prediction') {
+        updatePredictionPage();
+      } else if (pageName === 'simulation') {
+        updateSimulationPage();
+      } else if (pageName === 'explore') {
+        updateExplorePage();
+      }
+    }
+
+    // مفاتيح التبديل
+    function toggleSwitch(element, field) {
+      element.classList.toggle('active');
+      formState[field] = element.classList.contains('active');
+    }
+
+    function toggleSimSwitch(element, field) {
+      element.classList.toggle('active');
+      simState[field] = !element.classList.contains('active');
+      updateSimulation();
+    }
+
+    // تحديث قيم المنزلقات
+    function updateSliderValue(id, suffix) {
+      const slider = document.getElementById(id);
+      const display = document.getElementById(`${id}-value`);
+      if (slider && display) {
+        display.textContent = slider.value + suffix;
+      }
+    }
+
+    // إرسال نموذج الملف الشخصي
+    document.getElementById('profile-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const btn = document.getElementById('save-profile-btn');
+      btn.textContent = 'جاري الحفظ...';
+      btn.disabled = true;
+
+      const profileData = {
+        user_id: currentProfile?.user_id || `user_${Date.now()}`,
+        name: document.getElementById('name').value || 'مجهول',
+        age: parseInt(document.getElementById('age').value) || 35,
+        gender: document.getElementById('gender').value || 'other',
+        weight: parseFloat(document.getElementById('weight').value) || 70,
+        height: parseFloat(document.getElementById('height').value) || 170,
+        smoking: formState.smoking,
+        alcohol: document.getElementById('alcohol').value || 'none',
+        exercise: parseFloat(document.getElementById('exercise').value) || 3,
+        diet_quality: parseInt(document.getElementById('diet_quality').value) || 5,
+        sleep_hours: parseFloat(document.getElementById('sleep_hours').value) || 7,
+        stress_level: parseInt(document.getElementById('stress_level').value) || 5,
+        family_diabetes: formState.family_diabetes,
+        family_heart: formState.family_heart,
+        family_cancer: formState.family_cancer,
+        blood_pressure: document.getElementById('blood_pressure').value || 'normal',
+        cholesterol: document.getElementById('cholesterol').value || 'normal',
+        created_at: currentProfile?.created_at || new Date().toISOString(),
+        last_simulation: new Date().toISOString()
+      };
+
+      if (window.dataSdk) {
+        if (allProfiles.length >= 999) {
+          showToast('تم الوصول للحد الأقصى (999 ملف)', 'error');
+          btn.textContent = 'حفظ ملفي';
+          btn.disabled = false;
+          return;
+        }
+
+        let result;
+        if (currentProfile && currentProfile.__backendId) {
+          result = await window.dataSdk.update({ ...profileData, __backendId: currentProfile.__backendId });
+        } else {
+          result = await window.dataSdk.create(profileData);
+        }
+
+        if (result.isOk) {
+          showToast('تم حفظ الملف بنجاح! 🎉');
+        } else {
+          showToast('خطأ في الحفظ', 'error');
+        }
+      } else {
+        currentProfile = profileData;
+        updateProfileStatus();
+        showToast('تم حفظ الملف محلياً');
+      }
+
+      btn.textContent = 'حفظ ملفي';
+      btn.disabled = false;
+    });
+
+    // تحديث حالة الملف
+    function updateProfileStatus() {
+      const status = document.getElementById('profile-status');
+      if (currentProfile) {
+        status.innerHTML = `<span class="text-teal-400 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+          </svg>
+          تم الحفظ
+        </span>`;
+        
+        if (document.getElementById('name')) {
+          document.getElementById('name').value = currentProfile.name || '';
+          document.getElementById('age').value = currentProfile.age || '';
+          document.getElementById('gender').value = currentProfile.gender || '';
+          document.getElementById('weight').value = currentProfile.weight || '';
+          document.getElementById('height').value = currentProfile.height || '';
+          document.getElementById('alcohol').value = currentProfile.alcohol || 'none';
+          document.getElementById('exercise').value = currentProfile.exercise || 3;
+          document.getElementById('diet_quality').value = currentProfile.diet_quality || 5;
+          document.getElementById('sleep_hours').value = currentProfile.sleep_hours || 7;
+          document.getElementById('stress_level').value = currentProfile.stress_level || 5;
+          document.getElementById('blood_pressure').value = currentProfile.blood_pressure || 'normal';
+          document.getElementById('cholesterol').value = currentProfile.cholesterol || 'normal';
+          
+          updateSliderValue('exercise', ' س');
+          updateSliderValue('diet_quality', '/10');
+          updateSliderValue('sleep_hours', ' س');
+          updateSliderValue('stress_level', '/10');
+          
+          formState.smoking = currentProfile.smoking || false;
+          formState.family_diabetes = currentProfile.family_diabetes || false;
+          formState.family_heart = currentProfile.family_heart || false;
+          formState.family_cancer = currentProfile.family_cancer || false;
+          
+          updateToggleDisplay('toggle-smoking', formState.smoking);
+          updateToggleDisplay('toggle-family_diabetes', formState.family_diabetes);
+          updateToggleDisplay('toggle-family_heart', formState.family_heart);
+          updateToggleDisplay('toggle-family_cancer', formState.family_cancer);
+        }
+      }
+    }
+
+    function updateToggleDisplay(id, value) {
+      const toggle = document.getElementById(id);
+      if (toggle) {
+        if (value) {
+          toggle.classList.add('active');
+        } else {
+          toggle.classList.remove('active');
+        }
+      }
+    }
+
+    // حساب المخاطر (نموذج ML محاكى)
+    function calculateRisks(profile) {
+      let cardioRisk = 10;
+      let diabetesRisk = 8;
+      let oxidativeRisk = 12;
+
+      if (profile.age > 50) {
+        cardioRisk += 15;
+        diabetesRisk += 10;
+        oxidativeRisk += 8;
+      } else if (profile.age > 40) {
+        cardioRisk += 8;
+        diabetesRisk += 5;
+        oxidativeRisk += 4;
+      }
+
+      const heightM = profile.height / 100;
+      const bmi = profile.weight / (heightM * heightM);
+      
+      if (bmi > 30) {
+        cardioRisk += 20;
+        diabetesRisk += 25;
+        oxidativeRisk += 15;
+      } else if (bmi > 25) {
+        cardioRisk += 10;
+        diabetesRisk += 15;
+        oxidativeRisk += 8;
+      }
+
+      if (profile.smoking) {
+        cardioRisk += 25;
+        oxidativeRisk += 30;
+      }
+
+      if (profile.alcohol === 'heavy') {
+        cardioRisk += 15;
+        oxidativeRisk += 20;
+      } else if (profile.alcohol === 'regular') {
+        cardioRisk += 8;
+        oxidativeRisk += 10;
+      }
+
+      cardioRisk -= Math.min(profile.exercise * 2, 15);
+      diabetesRisk -= Math.min(profile.exercise * 2, 12);
+      oxidativeRisk -= Math.min(profile.exercise * 1.5, 10);
+
+      diabetesRisk -= Math.min((profile.diet_quality - 5) * 3, 15);
+      cardioRisk -= Math.min((profile.diet_quality - 5) * 2, 10);
+
+      if (profile.sleep_hours < 6 || profile.sleep_hours > 9) {
+        cardioRisk += 8;
+        diabetesRisk += 6;
+        oxidativeRisk += 10;
+      }
+
+      cardioRisk += Math.max((profile.stress_level - 5) * 2, 0);
+      oxidativeRisk += Math.max((profile.stress_level - 5) * 3, 0);
+
+      if (profile.family_heart) cardioRisk += 15;
+      if (profile.family_diabetes) diabetesRisk += 20;
+      if (profile.family_cancer) oxidativeRisk += 10;
+
+      if (profile.blood_pressure === 'high_2') cardioRisk += 20;
+      else if (profile.blood_pressure === 'high_1') cardioRisk += 12;
+      else if (profile.blood_pressure === 'elevated') cardioRisk += 5;
+
+      if (profile.cholesterol === 'high') cardioRisk += 15;
+      else if (profile.cholesterol === 'borderline') cardioRisk += 8;
+
+      return {
+        cardio: Math.max(5, Math.min(95, Math.round(cardioRisk))),
+        diabetes: Math.max(5, Math.min(95, Math.round(diabetesRisk))),
+        oxidative: Math.max(5, Math.min(95, Math.round(oxidativeRisk))),
+        bmi: Math.round(bmi * 10) / 10
+      };
+    }
+
+    // الحصول على شرح عوامل الخطر
+    function getRiskFactors(profile, risks) {
+      const factors = [];
+      const heightM = profile.height / 100;
+      const bmi = profile.weight / (heightM * heightM);
+
+      if (profile.smoking) {
+        factors.push({
+          name: 'التدخين',
+          impact: 'مرتفع',
+          color: 'red',
+          description: 'التدخين هو أهم عامل خطر قلبي وعائي قابل للتعديل.'
+        });
+      }
+
+      if (bmi > 25) {
+        factors.push({
+          name: 'زيادة الوزن/السمنة',
+          impact: bmi > 30 ? 'مرتفع' : 'متوسط',
+          color: bmi > 30 ? 'red' : 'amber',
+          description: `مؤشر كتلة جسمك ${bmi.toFixed(1)} يزيد مخاطر السكري وأمراض القلب.`
+        });
+      }
+
+      if (profile.exercise < 3) {
+        factors.push({
+          name: 'قلة الحركة',
+          impact: 'مت��سط',
+          color: 'amber',
+          description: 'أقل من 3 ساعات نشاط بدني أسبوعياً يزيد مخاطرك.'
+        });
+      }
+
+      if (profile.stress_level >= 7) {
+        factors.push({
+          name: 'التوتر المزمن',
+          impact: 'متوسط',
+          color: 'amber',
+          description: 'مستوى التوتر المرتفع يؤثر على جهازك القلبي الوعائي.'
+        });
+      }
+
+      if (profile.diet_quality < 5) {
+        factors.push({
+          name: 'التغذية',
+          impact: 'متوسط',
+          color: 'orange',
+          description: 'التغذية غير المتوازنة تزيد مخاطر السكري.'
+        });
+      }
+
+      if (profile.family_heart || profile.family_diabetes) {
+        factors.push({
+          name: 'التاريخ العائلي',
+          impact: 'غير قابل للتعديل',
+          color: 'purple',
+          description: 'خلفيتك الورا��ية تزيد من أهمية اليقظة.'
+        });
+      }
+
+      if (factors.length === 0) {
+        factors.push({
+          name: 'ملف إيجابي',
+          impact: 'جيد',
+          color: 'green',
+          description: 'عاداتك الحياتية الحالية إيجابية ب��كل عام. استمر هكذا!'
+        });
+      }
+
+      return factors;
+    }
+
+    // تحديث صفحة التنبؤ
+    function updatePredictionPage() {
+      const warning = document.getElementById('no-profile-warning');
+      const results = document.getElementById('prediction-results');
+
+      if (!currentProfile || !currentProfile.age) {
+        warning.classList.remove('hidden');
+        results.classList.add('hidden');
+        return;
+      }
+
+      warning.classList.add('hidden');
+      results.classList.remove('hidden');
+
+      const risks = calculateRisks(currentProfile);
+
+      // حساب درجة الصحة العامة
+      const avgRisk = (risks.cardio + risks.diabetes + risks.oxidative) / 3;
+      const healthScore = Math.round(100 - avgRisk);
+      document.getElementById('health-score').textContent = healthScore;
+      
+      // حساب إمكانية التحسين
+      const improvementPotential = Math.round(avgRisk * 0.4);
+      document.getElementById('improvement-potential').textContent = improvementPotential;
+      
+      // حساب العمر الصحي
+      const ageDiff = Math.round((avgRisk - 30) / 5);
+      const healthAge = currentProfile.age + ageDiff;
+      document.getElementById('health-age').textContent = healthAge;
+
+      // تحديث مؤشر كتلة الجسم
+      const imcValue = document.getElementById('imc-value');
+      const imcCategory = document.getElementById('imc-category');
+      const imcMarker = document.getElementById('imc-marker');
+      const imcInterpretation = document.getElementById('imc-interpretation');
+      
+      imcValue.textContent = risks.bmi;
+      
+      let imcPosition = 0;
+      let category = '';
+      if (risks.bmi < 18.5) {
+        imcPosition = (risks.bmi / 18.5) * 25;
+        category = 'نحافة';
+        imcInterpretation.textContent = 'مؤشر كتلة جسمك يشير إلى نحافة. استشر طبيباً لتقييم غذائي.';
+      } else if (risks.bmi < 25) {
+        imcPosition = 25 + ((risks.bmi - 18.5) / 6.5) * 25;
+        category = 'طبيعي';
+        imcInterpretation.textContent = 'مؤشر كتلة جسمك طبيعي. حافظ على عاداتك الجيدة!';
+      } else if (risks.bmi < 30) {
+        imcPosition = 50 + ((risks.bmi - 25) / 5) * 25;
+        category = 'زيادة وزن';
+        imcInterpretation.textContent = 'مؤشر كتلة جسمك يشير إلى زيادة وزن. النشاط البدني المنتظم يمكن أن يساعد.';
+      } else {
+        imcPosition = 75 + Math.min(((risks.bmi - 30) / 10) * 25, 25);
+        category = 'سمنة';
+        imcInterpretation.textContent = 'مؤشر كتلة جسمك يشير إلى سمنة. يُنصح بمتابعة طبية.';
+      }
+      
+      imcCategory.textContent = category;
+      imcMarker.style.left = `${imcPosition}%`;
+
+      // تحديث بطاقات المخاطر
+      updateRiskCard('cardio', risks.cardio);
+      updateRiskCard('diabetes', risks.diabetes);
+      updateRiskCard('oxidative', risks.oxidative);
+
+      // تحديث الرسم البياني المقارن
+      updateComparison('cardio', risks.cardio, 35);
+      updateComparison('diabetes', risks.diabetes, 28);
+      updateComparison('oxidative', risks.oxidative, 42);
+
+      // تحديث العوامل
+      const factors = getRiskFactors(currentProfile, risks);
+      const factorsList = document.getElementById('factors-list');
+      factorsList.innerHTML = factors.map(f => `
+        <div class="flex items-start gap-4 p-4 rounded-xl bg-${f.color}-500/10 border border-${f.color}-500/30">
+          <div class="w-3 h-3 rounded-full bg-${f.color}-400 mt-1"></div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-medium">${f.name}</span>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-${f.color}-500/20 text-${f.color}-400">${f.impact}</span>
+            </div>
+            <p class="text-sm text-slate-400">${f.description}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateComparison(type, userValue, avgValue) {
+      document.getElementById(`compare-${type}-you`).textContent = `${userValue}%`;
+      document.getElementById(`compare-${type}-bar`).style.width = `${userValue}%`;
+      
+      const diff = userValue - avgValue;
+      const diffEl = document.getElementById(`compare-${type}-diff`);
+      
+      if (diff > 0) {
+        diffEl.textContent = `+${diff}% أعلى من المتوسط`;
+        diffEl.className = 'text-xs font-semibold text-white drop-shadow-lg';
+      } else if (diff < 0) {
+        diffEl.textContent = `${Math.abs(diff)}% أقل من المتوسط`;
+        diffEl.className = 'text-xs font-semibold text-emerald-300 drop-shadow-lg';
+      } else {
+        diffEl.textContent = 'مطابق للمتوسط';
+        diffEl.className = 'text-xs font-semibold text-white drop-shadow-lg';
+      }
+    }
+
+    function updateRiskCard(type, value) {
+      const riskEl = document.getElementById(`risk-${type}`);
+      const barEl = document.getElementById(`risk-${type}-bar`);
+      const labelEl = document.getElementById(`risk-${type}-label`);
+      
+      if (riskEl) riskEl.textContent = `${value}%`;
+      if (barEl) {
+        barEl.style.width = `${value}%`;
+        if (value < 30) {
+          barEl.className = 'h-full risk-gradient-low transition-all duration-500';
+          if (labelEl) labelEl.textContent = 'خطر منخفض';
+        } else if (value < 60) {
+          barEl.className = 'h-full risk-gradient-medium transition-all duration-500';
+          if (labelEl) labelEl.textContent = 'خطر متوسط';
+        } else {
+          barEl.className = 'h-full risk-gradient-high transition-all duration-500';
+          if (labelEl) labelEl.textContent = 'خطر مرتفع';
+        }
+      }
+    }
+
+    // وظائف المحاكاة
+    function updateSimulationPage() {
+      const warning = document.getElementById('no-profile-simulation');
+      const content = document.getElementById('simulation-content');
+
+      if (!currentProfile || !currentProfile.age) {
+        warning.classList.remove('hidden');
+        content.classList.add('hidden');
+        return;
+      }
+
+      warning.classList.add('hidden');
+      content.classList.remove('hidden');
+
+      document.getElementById('sim-exercise').value = currentProfile.exercise || 3;
+      document.getElementById('sim-diet').value = currentProfile.diet_quality || 5;
+      document.getElementById('sim-stress').value = currentProfile.stress_level || 5;
+      document.getElementById('sim-sleep').value = currentProfile.sleep_hours || 7;
+      
+      simState.smoking = currentProfile.smoking;
+      updateToggleDisplay('sim-toggle-smoking', !currentProfile.smoking);
+
+      updateSimulation();
+    }
+
+    function updateSimulation() {
+      if (!currentProfile) return;
+
+      const simExercise = parseInt(document.getElementById('sim-exercise').value);
+      const simDiet = parseInt(document.getElementById('sim-diet').value);
+      const simStress = parseInt(document.getElementById('sim-stress').value);
+      const simSleep = parseInt(document.getElementById('sim-sleep').value);
+
+      document.getElementById('sim-exercise-value').textContent = `${simExercise} س/أسبوع`;
+      document.getElementById('sim-diet-value').textContent = `${simDiet}/10`;
+      document.getElementById('sim-stress-value').textContent = `${simStress}/10`;
+      document.getElementById('sim-sleep-value').textContent = `${simSleep} س`;
+
+      const originalRisks = calculateRisks(currentProfile);
+
+      const simProfile = {
+        ...currentProfile,
+        smoking: simState.smoking,
+        exercise: simExercise,
+        diet_quality: simDiet,
+        stress_level: simStress,
+        sleep_hours: simSleep
+      };
+      const simRisks = calculateRisks(simProfile);
+
+      updateSimComparison('cardio', originalRisks.cardio, simRisks.cardio);
+      updateSimComparison('diabetes', originalRisks.diabetes, simRisks.diabetes);
+      updateSimComparison('oxidative', originalRisks.oxidative, simRisks.oxidative);
+
+      const avgBefore = (originalRisks.cardio + originalRisks.diabetes + originalRisks.oxidative) / 3;
+      const avgAfter = (simRisks.cardio + simRisks.diabetes + simRisks.oxidative) / 3;
+      const gain = Math.round(avgBefore - avgAfter);
+
+      const gainEl = document.getElementById('total-gain');
+      gainEl.textContent = gain > 0 ? `-${gain}%` : `${Math.abs(gain)}%`;
+      gainEl.className = gain > 0 ? 'text-5xl font-bold text-emerald-400 mb-2' : 'text-5xl font-bold text-red-400 mb-2';
+
+      const tipsEl = document.getElementById('simulation-tips');
+      if (gain > 15) {
+        tipsEl.innerHTML = '<p class="text-sm text-emerald-300">🎉 ممتاز! هذه التغييرات ستحدث تأثيراً كبيراً على صحتك.</p>';
+      } else if (gain > 5) {
+        tipsEl.innerHTML = '<p class="text-sm text-emerald-300">👍 بداية جيدة! كل تغيير صغير مهم لصحتك.</p>';
+      } else if (gain > 0) {
+        tipsEl.innerHTML = '<p class="text-sm text-amber-300">💡 أنت على الطريق الصحيح. حاول تعديل المزيد من المعايير.</p>';
+      } else {
+        tipsEl.innerHTML = '<p class="text-sm text-slate-400">↔️ القيم الحالية تطابق ملفك. جرب تعديلها!</p>';
+      }
+    }
+
+    function updateSimComparison(type, before, after) {
+      document.getElementById(`sim-${type}-before`).textContent = `${before}% ←`;
+      document.getElementById(`sim-${type}-after`).textContent = `${after}%`;
+      document.getElementById(`sim-${type}-bar-before`).style.width = `${before}%`;
+      document.getElementById(`sim-${type}-bar-after`).style.width = `${after}%`;
+    }
+
+    function resetSimulation() {
+      if (currentProfile) {
+        document.getElementById('sim-exercise').value = currentProfile.exercise || 3;
+        document.getElementById('sim-diet').value = currentProfile.diet_quality || 5;
+        document.getElementById('sim-stress').value = currentProfile.stress_level || 5;
+        document.getElementById('sim-sleep').value = currentProfile.sleep_hours || 7;
+        simState.smoking = currentProfile.smoking;
+        updateToggleDisplay('sim-toggle-smoking', !currentProfile.smoking);
+        updateSimulation();
+        showToast('تم إعادة تعيين المحاكاة');
+      }
+    }
+
+    // صفحة الاستكشاف
+    function updateExplorePage() {
+      const profiles = allProfiles.length > 0 ? allProfiles : [currentProfile].filter(Boolean);
+      
+      document.getElementById('stat-users').textContent = profiles.length;
+
+      if (profiles.length === 0) {
+        document.getElementById('stat-avg-age').textContent = '--';
+        document.getElementById('stat-smokers').textContent = '--%';
+        document.getElementById('stat-avg-exercise').textContent = '-- س';
+        return;
+      }
+
+      const avgAge = Math.round(profiles.reduce((sum, p) => sum + (p.age || 0), 0) / profiles.length);
+      const smokersPct = Math.round((profiles.filter(p => p.smoking).length / profiles.length) * 100);
+      const avgExercise = Math.round(profiles.reduce((sum, p) => sum + (p.exercise || 0), 0) / profiles.length);
+
+      document.getElementById('stat-avg-age').textContent = avgAge;
+      document.getElementById('stat-smokers').textContent = `${smokersPct}%`;
+      document.getElementById('stat-avg-exercise').textContent = `${avgExercise} س`;
+
+      const riskCounts = { low: 0, medium: 0, high: 0 };
+      profiles.forEach(p => {
+        if (p.age) {
+          const risks = calculateRisks(p);
+          if (risks.cardio < 30) riskCounts.low++;
+          else if (risks.cardio < 60) riskCounts.medium++;
+          else riskCounts.high++;
+        }
+      });
+
+      const total = profiles.length || 1;
+      document.getElementById('bar-cardio-low').style.height = `${(riskCounts.low / total) * 100}%`;
+      document.getElementById('bar-cardio-medium').style.height = `${(riskCounts.medium / total) * 100}%`;
+      document.getElementById('bar-cardio-high').style.height = `${(riskCounts.high / total) * 100}%`;
+
+      const sedentaryPct = Math.round((profiles.filter(p => (p.exercise || 0) < 3).length / total) * 100);
+      const stressPct = Math.round((profiles.filter(p => (p.stress_level || 0) >= 7).length / total) * 100);
+      const dietPct = Math.round((profiles.filter(p => (p.diet_quality || 5) < 5).length / total) * 100);
+      const sleepPct = Math.round((profiles.filter(p => (p.sleep_hours || 7) < 6 || (p.sleep_hours || 7) > 9).length / total) * 100);
+      const smokingPct = Math.round((profiles.filter(p => p.smoking).length / total) * 100);
+
+      updateFactorBar('factor-sedentary', sedentaryPct || 65);
+      updateFactorBar('factor-stress', stressPct || 58);
+      updateFactorBar('factor-diet', dietPct || 52);
+      updateFactorBar('factor-sleep', sleepPct || 45);
+      updateFactorBar('factor-smoking', smokingPct || 28);
+    }
+
+    function updateFactorBar(id, pct) {
+      const bar = document.getElementById(id);
+      if (bar) {
+        bar.style.width = `${pct}%`;
+        bar.parentElement.nextElementSibling.textContent = `${pct}%`;
+      }
+    }
+
+    // إشعار Toast
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toast-message');
+      
+      toastMessage.textContent = message;
+      toast.className = `fixed bottom-4 left-4 px-6 py-3 rounded-xl glass-card transform transition-all duration-300 z-50 ${
+        type === 'error' ? 'border border-red-500/30 text-red-300' : 'border border-teal-500/30 text-teal-300'
+      }`;
+      
+      toast.style.transform = 'translateY(0)';
+      toast.style.opacity = '1';
+
+      setTimeout(() => {
+        toast.style.transform = 'translateY(20px)';
+        toast.style.opacity = '0';
+      }, 3000);
+    }
+
+    // التهيئة
+    initApp();
+    
+    // تحديث كل الصفحات بالبيانات التجريبية
+    setTimeout(() => {
+      updateProfileStatus();
+      updatePredictionPage();
+      updateSimulationPage();
+      updateExplorePage();
+    }, 100);
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b946ad49701759d',t:'MTc2NzYzMTIyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
